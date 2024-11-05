@@ -10,16 +10,16 @@ const CheckoutSideMenu = () => {
                 <h2 className='font-medium text-xl'>My Order</h2>
                 <IoMdClose className='h-6 w-6 cursor-pointer' onClick={() => setIsCheckoutSideMenuOpen(false)} />
             </div>
-            <div>
+            <div className='px-6 overflow-y-scroll'>
                 {
-                    cartProducts.map(product => {
+                    cartProducts.map(product => (
                         <OrderCard
                             key={product.id}
                             title={product.title}
                             imageUrl={product.images[0]}
                             price={product.price}
                         />
-                    })
+                    ))
                 }
             </div>
         </aside >
