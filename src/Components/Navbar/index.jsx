@@ -3,7 +3,7 @@ import { useShoppingCart } from "../../Hooks/useShoppingCart";
 import { GiShoppingCart } from "react-icons/gi";
 
 const Navbar = () => {
-    const { count } = useShoppingCart();
+    const { cartProducts } = useShoppingCart();
 
     const menu1 = [
         { to: '/', text: 'Shopi', className: 'font-semibold text-lg' },
@@ -25,7 +25,7 @@ const Navbar = () => {
             element: (
                 <div className="flex items-center gap-1">
                     <GiShoppingCart className='w-6 h-6' />
-                    <div>{count}</div>
+                    <div>{cartProducts.length}</div>
                 </div>
             ),
             className: ''

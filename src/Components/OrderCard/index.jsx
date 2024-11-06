@@ -1,7 +1,7 @@
 import { IoMdClose } from "react-icons/io";
 
 const OrderCard = props => {
-    const { id, title, imageUrl, price } = props
+    const { id, title, imageUrl, price, handleDelete } = props
     return (
         <div className='flex justify-between items-center mb-3'>
             <div className='flex items-center gap-2'>
@@ -11,8 +11,8 @@ const OrderCard = props => {
                 <p className='text-sm font-light'>{title}</p>
             </div>
             <div className='flex items-center gap-2'>
-                <p className='text-lg font-medium'>{price}</p>
-                <IoMdClose className='h-6 w-6 cursor-pointer' />
+                <p className='text-lg font-medium'>${price}</p>
+                <IoMdClose onClick={() => handleDelete(id)} className='h-6 w-6 cursor-pointer' />
             </div>
         </div>
     )
