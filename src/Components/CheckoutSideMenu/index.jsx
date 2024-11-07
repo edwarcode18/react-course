@@ -1,6 +1,7 @@
 import { IoMdClose } from "react-icons/io";
 import { useShoppingCart } from "../../Hooks/useShoppingCart";
 import OrderCard from "../OrderCard";
+import { Link } from "react-router-dom";
 
 const CheckoutSideMenu = () => {
     const { isCheckoutSideMenuOpen, setIsCheckoutSideMenuOpen, cartProducts, setCartProducts, totalPrice, order, setOrder } = useShoppingCart();
@@ -17,6 +18,7 @@ const CheckoutSideMenu = () => {
 
         setOrder([...order, orderToAdd]);
         setCartProducts([]);
+        setIsCheckoutSideMenuOpen(false);
     }
 
     return (
@@ -25,7 +27,7 @@ const CheckoutSideMenu = () => {
                 <h2 className='font-medium text-xl'>My Order</h2>
                 <IoMdClose className='h-6 w-6 cursor-pointer' onClick={() => setIsCheckoutSideMenuOpen(false)} />
             </div>
-            <div className='px-6 overflow-y-scroll'>
+            <div className='px-6 overflow-y-auto flex-1'>
                 {
                     cartProducts.map(product => (
                         <OrderCard
@@ -39,12 +41,17 @@ const CheckoutSideMenu = () => {
                     ))
                 }
             </div>
-            <div className='px-6'>
-                <p className='flex justify-between items-center'>
+            <div className='px-6 mb-6'>
+                <p className='flex justify-between items-center mb-2'>
                     <span className='font-light'>Total:</span>
                     <span className='font-medium text-2xl'>${totalPrice(cartProducts)}</span>
                 </p>
-                <button onClick={() => handleCheckout()}>Checkout</button>
+                {cartProducts.length > 0 ? (
+                    <Link to='/my-orders/last'>
+                        <button className='bg-black text-white rounded-lg py-3 w-full' onClick={() => handleCheckout()}>Checkout</button>
+                    </Link>
+                ) : null}
+
             </div>
         </aside >
     )
