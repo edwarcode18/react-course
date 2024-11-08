@@ -4,22 +4,7 @@ import OrderCard from "../OrderCard";
 import { Link } from "react-router-dom";
 
 const CheckoutSideMenu = () => {
-    const { isCheckoutSideMenuOpen, setIsCheckoutSideMenuOpen, cartProducts, setCartProducts, totalPrice, order, setOrder } = useShoppingCart();
-
-    const handleDelete = (id) => setCartProducts(cartProducts.filter(product => product.id != id));
-
-    const handleCheckout = () => {
-        const orderToAdd = {
-            date: '01.02.23',
-            products: cartProducts,
-            totalProducts: cartProducts.length,
-            totalPrice: totalPrice(cartProducts)
-        }
-
-        setOrder([...order, orderToAdd]);
-        setCartProducts([]);
-        setIsCheckoutSideMenuOpen(false);
-    }
+    const { isCheckoutSideMenuOpen, setIsCheckoutSideMenuOpen, cartProducts, handleDelete, getTotalPrice, handleCheckout } = useShoppingCart();
 
     return (
         <aside className={`${isCheckoutSideMenuOpen ? 'flex' : 'hidden'} w-[360px] top-[68px] flex-col fixed right-0 border border-black rounded-lg bg-white h-[calc(100vh-68px)]`}>
@@ -44,7 +29,7 @@ const CheckoutSideMenu = () => {
             <div className='px-6 mb-6'>
                 <p className='flex justify-between items-center mb-2'>
                     <span className='font-light'>Total:</span>
-                    <span className='font-medium text-2xl'>${totalPrice(cartProducts)}</span>
+                    <span className='font-medium text-2xl'>${getTotalPrice(cartProducts)}</span>
                 </p>
                 {cartProducts.length > 0 ? (
                     <Link to='/my-orders/last'>

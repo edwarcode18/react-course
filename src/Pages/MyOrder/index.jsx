@@ -2,9 +2,12 @@ import OrderCard from "../../Components/OrderCard";
 import { FaChevronLeft } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useShoppingCart } from "../../Hooks/useShoppingCart";
+import { useParams } from "react-router-dom";
 
 function MyOrder() {
     const { order } = useShoppingCart();
+    const { id } = useParams()
+
     return (
         <div>
             <div className='flex items-center justify-center relative w-80 mb-6'>
@@ -15,7 +18,7 @@ function MyOrder() {
             </div>
             <div className='flex flex-col w-80'>
                 {
-                    order?.slice(-1)[0]?.products.map(product => (
+                    order?.at(id === 'last' ? -1 : id)?.products.map(product => (
                         <OrderCard
                             key={product.id}
                             id={product.id}
