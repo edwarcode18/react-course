@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { useCallback, createContext, useState, useEffect } from "react";
 import { GiShoppingCart } from "react-icons/gi";
 import { FaPlus, FaCheck } from "react-icons/fa6";
 import Card from "../Components/Card"
@@ -9,6 +9,64 @@ export const ShoppingCartProvider = ({ children }) => {
     // Product Detail . Open / Close
     const [isProductDetailOpen, setIsProductDetailOpen] = useState(false);
     const [productToShow, setProductToShow] = useState(null);
+    const [isCheckoutSideMenuOpen, setIsCheckoutSideMenuOpen] = useState(false);
+    const [cartProducts, setCartProducts] = useState([]);
+    const [order, setOrder] = useState([])
+    const [products, setProducts] = useState([]);
+    const [searchByTitle, setSearchByTitle] = useState('');
+    const [filteredItems, setFilteredItems] = useState([]);
+    const [inputValue, setInputValue] = useState('');
+    const [category, setCategory] = useState(null);
+
+    // Fetch products
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('https://api.escuelajs.co/api/v1/products');
+                if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+                const data = await response.json();
+                setProducts(data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        fetchData();
+    }, []);
+
+    // Filtrar productos por título
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setSearchByTitle(inputValue);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [inputValue]);
+
+    useEffect(() => {
+        let filtered = products;
+        if (searchByTitle) {
+            filtered = filtered.filter(product =>
+                product.title.toLowerCase().includes(searchByTitle.toLowerCase())
+            );
+        }
+        if (category) {
+            setSearchByTitle(null);
+            filtered = filtered.filter(product =>
+                product.category.name.toLowerCase().trim() === category.toLowerCase().trim()
+            );
+        }
+        setFilteredItems(filtered);
+    }, [searchByTitle, category, products]);
+
+    const filterProductsByCategory = (categoryParam) => {
+        setCategory(categoryParam);
+    };
+
+    const renderView = () => {
+        return filteredItems.length > 0
+            ? filteredItems.map(item => <Card key={item.id} data={item} />)
+            : <p>No Results Found</p>;
+    };
 
     // Product Detail . Show product
     const showProduct = (productDetail) => {
@@ -17,47 +75,19 @@ export const ShoppingCartProvider = ({ children }) => {
         setIsCheckoutSideMenuOpen(false);
     };
 
-    // Checkout Side Menu . Open / Close
-    const [isCheckoutSideMenuOpen, setIsCheckoutSideMenuOpen] = useState(false);
-
-    // Shopping Cart . Add products to cart
-    const [cartProducts, setCartProducts] = useState([]);
-
     const getTotalPrice = (products) => products.reduce((sum, product) => sum + product.price, 0);
-
-    // Shopping Cart . Order
-    const [order, setOrder] = useState([])
-
-    // Get products
-    const [products, setProducts] = useState([]);
 
     // Get Orders Card
     const currentDate = () => new Date().toLocaleDateString();
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('https://api.escuelajs.co/api/v1/products');
-                if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
-
-                const data = await response.json();
-                setProducts(data);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-
-        fetchData();
-    }, []);
-
     const menu1 = [
         { to: '/', text: 'Shopi', className: 'font-semibold text-lg' },
         { to: '/', text: 'All', className: '' },
-        { to: '/clothes', text: 'Clothes', className: '' },
-        { to: '/electronics', text: 'Electronics', className: '' },
-        { to: '/furnitures', text: 'Furnitures', className: '' },
-        { to: '/toys', text: 'Toys', className: '' },
-        { to: '/others', text: 'Others', className: '' }
+        { to: '/category/clothes', text: 'Clothes', className: '' },
+        { to: '/category/electronics', text: 'Electronics', className: '' },
+        { to: '/category/furnitures', text: 'Furnitures', className: '' },
+        { to: '/category/toys', text: 'Toys', className: '' },
+        { to: '/category/others', text: 'Others', className: '' }
     ]
 
     const menu2 = [
@@ -110,47 +140,9 @@ export const ShoppingCartProvider = ({ children }) => {
         )
     }
 
-    // Get products by title
-    const [searchByTitle, setSearchByTitle] = useState('');
-
-    // Get products
-    const [filteredItems, setFilteredItems] = useState(null);
-
-    const filteredItemsByTitle = (items, searchByTitle) =>
-        items?.filter(item => item?.title.toLowerCase().includes(searchByTitle.toLowerCase()));
-
-    useEffect(() => {
-        if (searchByTitle) {
-            setFilteredItems(filteredItemsByTitle(products, searchByTitle));
-        } else {
-            setFilteredItems(products);
-        }
-    }, [searchByTitle, products]);
-
-    const renderView = () => {
-        const itemsToRender = searchByTitle
-            ? filteredItems : products;
-
-        return itemsToRender
-            ? itemsToRender.map(item => (
-                <Card key={item.id} data={item} />
-            ))
-            : <p>No Results Found</p>;
-    }
-
-    const [inputValue, setInputValue] = useState('');
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setSearchByTitle(inputValue);
-        }, 300);
-
-        return () => clearTimeout(timer);
-    }, [inputValue, setSearchByTitle]);
-
     return (
         <ShoppingCartContext.Provider value={{
-            isProductDetailOpen, setIsProductDetailOpen, productToShow, showProduct, cartProducts, setCartProducts, isCheckoutSideMenuOpen, setIsCheckoutSideMenuOpen, getTotalPrice, order, setOrder, products, setProducts, currentDate, menu1, menu2, handleDelete, handleCheckout, addProductsToCart, renderIcon, searchByTitle, setSearchByTitle, renderView, setInputValue
+            isProductDetailOpen, setIsProductDetailOpen, productToShow, showProduct, cartProducts, setCartProducts, isCheckoutSideMenuOpen, setIsCheckoutSideMenuOpen, getTotalPrice, order, setOrder, products, setProducts, currentDate, menu1, menu2, handleDelete, handleCheckout, addProductsToCart, renderIcon, searchByTitle, setSearchByTitle, renderView, setInputValue, filterProductsByCategory, category, setCategory
         }}>
             {children}
         </ShoppingCartContext.Provider>

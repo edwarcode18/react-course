@@ -1,8 +1,15 @@
-import ProductDetail from "../../Components/ProductDetail";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { useShoppingCart } from "../../Hooks/useShoppingCart";
+import ProductDetail from "../../Components/ProductDetail";
 
 function Home() {
-    const { setInputValue, renderView } = useShoppingCart();
+    const { category } = useParams();
+    const { setInputValue, renderView, filterProductsByCategory } = useShoppingCart();
+
+    useEffect(() => {
+        filterProductsByCategory(category || null);
+    }, [category]);
 
     return (
         <div>
@@ -10,6 +17,7 @@ function Home() {
                 <h1 className='font-medium text-xl'>Exclusive Products</h1>
             </div>
             <input
+                id="search_products"
                 type="text"
                 placeholder='Search a product'
                 className='rounded-lg border border-black w-80 p-4 mb-4 focus:outline-none'
